@@ -2,7 +2,7 @@
 /**
  * Action for VOID Plugin
  *
- * @author AlanDecode | 熊猫小A
+ * @author 熊猫小A & Monst.x
  */
 require_once 'libs/IP.php';
 require_once 'libs/ParseAgent.php';
@@ -58,6 +58,42 @@ class VOID_Action extends Typecho_Widget implements Widget_Interface_Do
         $this->on($this->request->is('cleanimginfo'))->void_clean_img_info();
         
         //$this->response->goBack();
+
+        /**
+         * 返回 ExSearch 请求的 Json
+         * 
+         * @access public
+         */
+        // 要求先登录
+        Typecho_Widget::widget('Widget_User')->to($user);
+        if (!$user->have() || !$user->hasLogin()) {
+            echo 'Invalid Request';
+            exit;
+        }
+        switch ($_GET['action']) {
+            case 'rebuild':
+                VOID_Plugin::save();
+?>
+                重建索引完成，<a href="<?php Helper::options()->siteUrl(); ?>" target="_self">回到首页</a>。
+<?php
+                break;
+
+            case 'api':
+                header('Content-Type: application/json');
+
+                $key = $_GET['key'];
+                if(empty($key)){
+                    echo json_encode(array());
+                    return;
+                } 
+                $db = Typecho_Db::get();
+                $row = $db->fetchRow($db->select()->from('table.exsearch')
+                        ->where('table.exsearch.key = ?', $key));
+                $content = $row['data'];
+                echo $content;
+                break;
+        }
+        
     }
 
     // 为图片获取长宽信息，并替换原src
