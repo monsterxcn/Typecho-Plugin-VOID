@@ -413,11 +413,6 @@ class VOID_Plugin implements Typecho_Plugin_Interface
                 'data' => $cache
             )));
         }
-        if($setting->static == 'true'){
-            $setting->exjson = Helper::options()->pluginUrl.'VOID/cache/cache-'.$key.'.json';
-        }else{
-            $setting->exjson = Helper::options()->index.'/ExSearch/?action=api&key='.$key;
-        }
     }
 
     /**
