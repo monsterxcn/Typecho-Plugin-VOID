@@ -20,10 +20,12 @@
 
 ## 更新日志
 
+**2020.04.22** 集成 ExSearch 插件功能
+
 **2020.04.21** 初始化仓库
 
 ## 待办清单
 
- - 集成 PandaBangumi 插件功能
- - 集成 ExSearch 插件功能
- - 集成 Links 插件功能
+ - [ ] 集成 PandaBangumi 插件功能
+ - [ ] 集成 Links 插件功能
+ - [x] 集成 ExSearch 插件功能
