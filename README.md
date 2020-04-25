@@ -8,6 +8,8 @@
 
 下载本插件，**解压后将文件夹名称修改为 VOID**，上传至插件目录启用。
 
+请保证插件下 cache 目录可写！
+
 配合 [VOID 主题](https://github.com/AlanDecode/Typecho-Theme-VOID) 使用。
 
 ## 特性

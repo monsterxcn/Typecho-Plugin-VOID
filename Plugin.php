@@ -1,7 +1,7 @@
 <?php
 if (!defined('__TYPECHO_ROOT_DIR__')) exit;
 /**
- * VOID 主题配套插件
+ * VOID 二次开发主题配套插件 <strong style="color:red;">禁止与原版同时开启</strong>
  * 
  * @package VOID
  * @author Monst.x
