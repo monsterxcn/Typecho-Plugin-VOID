@@ -7,6 +7,7 @@
 require_once 'libs/IP.php';
 require_once 'libs/ParseAgent.php';
 require_once 'libs/ParseImg.php';
+require_once 'libs/PandaBangumi.php'
 
 
 /**
@@ -59,11 +60,27 @@ class VOID_Action extends Typecho_Widget implements Widget_Interface_Do
         
         //$this->response->goBack();
 
-        /**
-         * 返回 ExSearch 请求的 Json
-         * 
-         * @access public
-         */
+
+        /** PandaBangumi Action */
+        header("Content-type: application/json");
+        if (!array_key_exists('type', $_GET)) {
+            echo json_encode(array());
+            exit;
+        }
+        $options = Helper::options();
+        $ID = $options->plugin('VOID')->ID;
+        $PageSize = $options->plugin('VOID')->PageSize;
+        $ValidTimeSpan = $options->plugin('VOID')->ValidTimeSpan;
+        $From = $_GET['from'];
+        if ($PageSize == -1) {
+            $PageSize = 1000000;
+        }
+        if (strtolower($_GET['type']) == 'watching')
+            echo BangumiAPI::updateCacheAndReturn($ID, $PageSize, $From, $ValidTimeSpan);
+        elseif (strtolower($_GET['type']) == 'watched')
+            echo BangumiAPI::updateWatchedCacheAndReturn($ID, $PageSize, $From, $ValidTimeSpan);
+
+        /** ExSearch Action */
         // 要求先登录
         Typecho_Widget::widget('Widget_User')->to($user);
         if (!$user->have() || !$user->hasLogin()) {
@@ -73,14 +90,11 @@ class VOID_Action extends Typecho_Widget implements Widget_Interface_Do
         switch ($_GET['action']) {
             case 'rebuild':
                 VOID_Plugin::save();
-?>
-                重建索引完成，<a href="<?php Helper::options()->siteUrl(); ?>" target="_self">回到首页</a>。
-<?php
+                echo '重建索引完成，请关闭本页面';
                 break;
-
+            
             case 'api':
                 header('Content-Type: application/json');
-
                 $key = $_GET['key'];
                 if(empty($key)){
                     echo json_encode(array());
@@ -93,7 +107,7 @@ class VOID_Action extends Typecho_Widget implements Widget_Interface_Do
                 echo $content;
                 break;
         }
-        
+
     }
 
     // 为图片获取长宽信息，并替换原src

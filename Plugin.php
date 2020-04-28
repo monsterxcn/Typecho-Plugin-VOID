@@ -59,6 +59,9 @@ class VOID_Plugin implements Typecho_Plugin_Interface
         if (!extension_loaded('openssl')) {
             throw new Typecho_Plugin_Exception('启用失败，PHP 需启用 OpenSSL 扩展。');
         }
+        if (!extension_loaded('curl')) {
+            throw new Typecho_Plugin_Exception('启用失败，PHP 需启用 CURL 扩展。');
+        }
 
         /** 图片附件尺寸解析，注册 hook */
         Typecho_Plugin::factory('Widget_Upload')->upload = array('VOID_Plugin', 'upload');
@@ -143,7 +146,7 @@ class VOID_Plugin implements Typecho_Plugin_Interface
                 `data` longtext,
                 primary key (`id`)
             ) default charset=utf8';
- 
+
             $sqls = explode(';', $sql);
             foreach ($sqls as $sql) {
                 $db->query($sql);
@@ -160,6 +163,9 @@ class VOID_Plugin implements Typecho_Plugin_Interface
 
         // 评论列表显示来源
         Typecho_Plugin::factory('Widget_Comments_Admin')->callIp = array('VOID_Plugin', 'commentLocation');
+
+        // 添加 PandaBangumi 路由
+        Helper::addRoute("route_PandaBangumi","/PandaBangumi","VOID_Action",'action');
 
         // 添加 ExSearch 路由
         Helper::addRoute("route_ExSearch","/ExSearch","VOID_Action",'action');
@@ -183,6 +189,9 @@ class VOID_Plugin implements Typecho_Plugin_Interface
         Helper::removeAction('void_vote');
         Helper::removePanel(3, 'VOID/pages/showActivity.php');
 
+        // PandaBangumi 禁用方法
+        Helper::removeRoute("route_PandaBangumi");
+
         // Exsearch 禁用方法
         // 删除路由
         Helper::removeRoute("route_ExSearch");
@@ -202,10 +211,10 @@ class VOID_Plugin implements Typecho_Plugin_Interface
      */
     public static function config(Typecho_Widget_Helper_Form $form)
     {
-        echo '作者：<a href="https://www.imalan.cn">熊猫小A</a> & <a href="https://monsterx.cn">Monst.x</a><br>';
-        echo '功能包含：<a href="https://github.com/AlanDecode/VOID-Plugin">VOID</a> & <a href="https://github.com/AlanDecode/Typecho-Plugin-ExSearch">ExSearch</a><br>';
-        echo '<p><h3>ExSearch 使用方式</h3> &lt;button class=&quot;search-form-input&quot;&gt;搜索&lt;/button&gt;</p><br>';
-        print '<p>启用 Exsearch 后请保存一次设置，然后 <a href="' .Helper::options()->index('/ExSearch?action=rebuild'). '" target="_blank">重建索引</a> 。<br>重建索引会清除所有缓存数据。<br></p>';
+        echo '作者：<a href="https://www.imalan.cn" target="_blank">熊猫小A</a>，由 <a href="https://monsterx.cn" target="_blank">Monst.x</a> 融合功能<br>';
+        echo '功能包含：<a href="https://github.com/AlanDecode/VOID-Plugin" target="_blank">VOID</a> & <a href="https://github.com/AlanDecode/Typecho-Plugin-ExSearch" target="_blank">ExSearch</a> & <a href="https://github.com/AlanDecode/Typecho-Plugin-PandaBangumi" target="_blank">PandaBangumi</a><br>';
+        echo '<br><strong>ExSearch 使用方法：打开下方开关后保存设置，然后 <a href="'; Helper::options()->index('/ExSearch?action=rebuild'); echo 'target="_blank">重建索引</a> （重建索引会清除所有缓存数据）</strong><br>';
+        echo '<br><strong>PandaBangumi 使用方法：新建独立页面选中 Bgm 追番模板，如需修改模板请参考该插件说明</strong><br>';
 
         /** ExSearch 面板 */
         // ExSearch 开关
@@ -226,18 +235,40 @@ class VOID_Plugin implements Typecho_Plugin_Interface
             '静态化可以节省数据库调用，降低服务器压力。<mark>若需启用，需要保证本插件目录中 cache 文件夹可写。</mark>'
         );
         $form->addInput($t);
-        // ExSearch 引用 jQuery
-        $t = new Typecho_Widget_Helper_Form_Element_Radio(
-            'jq',
-            array('true' => '是','false' => '否'),
-            'false',
-            '引入 JQuery',
-            '是否引入 JQuery。<mark>若你的主题已经引入了，请务必关闭此项。</mark>'
-        );
-        $form->addInput($t);
         // Json 文件地址
         $exjson = new Typecho_Widget_Helper_Form_Element_Text('exjson', NULL, '', _t('ExSearch Json 地址'), _t('如果不明白这是什么，请务必保持此项为空！'));
         $form->addInput($exjson);
+
+        echo '<hr />';
+
+        /** PanddaBangumi 面板 */
+        // PandaBangumi 开关
+        $t = new Typecho_Widget_Helper_Form_Element_Radio(
+            'bgmswitch',
+            array('true' => '是','false' => '否'),
+            'true',
+            '开启 PandaBangumi',
+            '开启 PandaBangumi 可扩展主题独立模板，实现追番展示。'
+        );
+        $form->addInput($t);
+        $ID = new Typecho_Widget_Helper_Form_Element_Text('ID', NULL, '', _t('用户 ID'), 
+            _t('填写你的 Bangumi 主页链接 user 后面那一串数字'));
+        $form->addInput($ID);
+        $PageSize = new Typecho_Widget_Helper_Form_Element_Text('PageSize', NULL, '6', _t('每页数量'), 
+            _t('填写番剧列表每页数量，填写 -1 则在一页内全部显示，默认为 6.'));
+        $form->addInput($PageSize);
+        $ValidTimeSpan = new Typecho_Widget_Helper_Form_Element_Text('ValidTimeSpan', NULL, '86400', _t('缓存过期时间'), 
+            _t('设置缓存过期时间，单位为秒，默认 24 小时。'));
+        $form->addInput($ValidTimeSpan);
+        $ParseMethod = new Typecho_Widget_Helper_Form_Element_Radio('ParseMethod', array(
+            'api' => 'API',
+            'webpage' => '网页'), 'api', 
+            '已看列表解析方式', 'API 解析相对稳定，但是有最多获取最近 25 部的限制。网页解析速度可能较慢，但能获取更多记录。不影响在看列表。');
+        $form->addInput($ParseMethod);
+        $Limit = new Typecho_Widget_Helper_Form_Element_Text('Limit', NULL, '20', _t('已看列表数量限制'), _t('设置获取数量限制，不建议设置得太大，有被 Bangumi 拉黑的风险。<b>仅当通过网页解析时有效</b>。不影响在看列表。'));
+        $form->addInput($Limit);
+
+        echo '<hr />';
 
         /** VOID 默认面板 */
         // 可设置每次获取图片基础信息数量上限
@@ -367,6 +398,36 @@ class VOID_Plugin implements Typecho_Plugin_Interface
         echo $comments->ip . '<br>' . $location;
     }
 
+    /**
+     * 根据 cid 生成对象
+     * 
+     * @access private
+     * @param string $table 表名, 支持 contents, comments, metas, users
+     * @return Widget_Abstract
+     */
+    private static function widget($table, $pkId)
+    {
+        $table = ucfirst($table);
+        if (!in_array($table, array('Contents', 'Comments', 'Metas', 'Users'))) {
+            return NULL;
+        }
+        $keys = array(
+            'Contents'  =>  'cid',
+            'Comments'  =>  'coid',
+            'Metas'     =>  'mid',
+            'Users'     =>  'uid'
+        );
+        $className = "Widget_Abstract_{$table}";
+        $key = $keys[$table];
+        $db = Typecho_Db::get();
+        $widget = new $className(Typecho_Request::getInstance(), Typecho_Widget_Helper_Empty::getInstance());
+        
+        $db->fetchRow(
+            $widget->select()->where("{$key} = ?", $pkId)->limit(1),
+                array($widget, 'push'));
+        return $widget;
+    }
+
     /** 以下 ExSearch 方法 */
     /**
      * 更新数据库
@@ -395,7 +456,7 @@ class VOID_Plugin implements Typecho_Plugin_Interface
 
         if(Helper::options()->plugin('VOID')->static == 'true')
         {
-            $code = file_put_contents(__DIR__.'/cache/cache-'.$md5.'.json', $cache);
+            $code = file_put_contents(__DIR__.'/cache/exsearch-'.$md5.'.json', $cache);
             if($code < 1)
             {
                 throw new Typecho_Plugin_Exception('ExSearch 索引写入失败，请保证缓存目录可写', 1);
@@ -431,7 +492,7 @@ class VOID_Plugin implements Typecho_Plugin_Interface
         }
 
         // 删除静态缓存
-        foreach (glob(__DIR__.'/cache/*.json') as $file) {
+        foreach (glob(__DIR__.'/cache/exsearch-*.json') as $file) {
             unlink($file);
         }
     }
@@ -497,33 +558,5 @@ class VOID_Plugin implements Typecho_Plugin_Interface
         return $cache;
     }
 
-    /**
-     * 根据 cid 生成对象
-     * 
-     * @access private
-     * @param string $table 表名, 支持 contents, comments, metas, users
-     * @return Widget_Abstract
-     */
-    private static function widget($table, $pkId)
-    {
-        $table = ucfirst($table);
-        if (!in_array($table, array('Contents', 'Comments', 'Metas', 'Users'))) {
-            return NULL;
-        }
-        $keys = array(
-            'Contents'  =>  'cid',
-            'Comments'  =>  'coid',
-            'Metas'     =>  'mid',
-            'Users'     =>  'uid'
-        );
-        $className = "Widget_Abstract_{$table}";
-        $key = $keys[$table];
-        $db = Typecho_Db::get();
-        $widget = new $className(Typecho_Request::getInstance(), Typecho_Widget_Helper_Empty::getInstance());
-        
-        $db->fetchRow(
-            $widget->select()->where("{$key} = ?", $pkId)->limit(1),
-                array($widget, 'push'));
-        return $widget;
-    }
+    // ExSearch & PandaBangumi css js 由主题统一引入
 }
