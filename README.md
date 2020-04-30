@@ -10,7 +10,7 @@
 
 请保证插件下 cache 目录可写！
 
-配合 [VOID 主题](https://github.com/AlanDecode/Typecho-Theme-VOID) 使用。
+配合 [VOID 主题](https://github.com/monsterxcn/Typecho-Theme-VOID) 使用。
 
 ## 特性
 

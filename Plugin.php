@@ -213,7 +213,7 @@ class VOID_Plugin implements Typecho_Plugin_Interface
     {
         echo '作者：<a href="https://www.imalan.cn" target="_blank">熊猫小A</a>，由 <a href="https://monsterx.cn" target="_blank">Monst.x</a> 融合功能<br>';
         echo '功能包含：<a href="https://github.com/AlanDecode/VOID-Plugin" target="_blank">VOID</a> & <a href="https://github.com/AlanDecode/Typecho-Plugin-ExSearch" target="_blank">ExSearch</a> & <a href="https://github.com/AlanDecode/Typecho-Plugin-PandaBangumi" target="_blank">PandaBangumi</a><br>';
-        echo '<br><strong>ExSearch 使用方法：打开下方开关后保存设置，然后 <a href="'; Helper::options()->index('/ExSearch?action=rebuild'); echo 'target="_blank">重建索引</a> （重建索引会清除所有缓存数据）</strong><br>';
+        echo '<br><strong>ExSearch 使用方法：打开下方开关后保存设置，然后 <a href="' .Helper::options()->index. '/ExSearch?action=rebuild" target="_blank">重建索引</a> （重建索引会清除所有缓存数据）</strong><br>';
         echo '<br><strong>PandaBangumi 使用方法：新建独立页面选中 Bgm 追番模板，如需修改模板请参考该插件说明</strong><br>';
 
         /** ExSearch 面板 */
