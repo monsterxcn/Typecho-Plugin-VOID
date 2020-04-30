@@ -58,40 +58,7 @@ class VOID_Action extends Typecho_Widget implements Widget_Interface_Do
         $this->on($this->request->is('cleanimginfo'))->void_clean_img_info();
         //$this->response->goBack();
 
-        /** ExSearch Action */
-        // 要求先登录
-        Typecho_Widget::widget('Widget_User')->to($user);
-        if (!$user->have() || !$user->hasLogin()) {
-            echo 'Invalid Request';
-            exit;
-        }
-        switch ($_GET['action']) {
-            case 'rebuild':
-                VOID_Plugin::save();
-                echo '重建索引完成，请关闭本页面';
-                break;
-            
-            case 'api':
-                header('Content-Type: application/json');
-                $key = $_GET['key'];
-                if(empty($key)){
-                    echo json_encode(array());
-                    return;
-                } 
-                $db = Typecho_Db::get();
-                $row = $db->fetchRow($db->select()->from('table.exsearch')
-                        ->where('table.exsearch.key = ?', $key));
-                $content = $row['data'];
-                echo $content;
-                break;
-        }
-
-        /** PandaBangumi Action */
-        header("Content-type: application/json");
-        if (!array_key_exists('type', $_GET)) {
-            echo json_encode(array());
-            exit;
-        }
+        /** ExSearch & PandaBangumi Action */
         $options = Helper::options();
         $ID = $options->plugin('VOID')->ID;
         $PageSize = $options->plugin('VOID')->PageSize;
@@ -100,10 +67,45 @@ class VOID_Action extends Typecho_Widget implements Widget_Interface_Do
         if ($PageSize == -1) {
             $PageSize = 1000000;
         }
-        if (strtolower($_GET['type']) == 'watching')
+        if (strtolower($_GET['action']) == 'rebuild') {
+            // 要求先登录
+            Typecho_Widget::widget('Widget_User')->to($user);
+            if (!$user->have() || !$user->hasLogin()) {
+                echo 'Invalid Request';
+                exit;
+            }
+            VOID_Plugin::save();
+            echo '重建索引完成，请关闭本页面';
+        }
+        elseif (strtolower($_GET['action']) == 'api') {
+            header('Content-Type: application/json');
+            $key = $_GET['key'];
+            if(empty($key)){
+                echo json_encode(array());
+                return;
+            } 
+            $db = Typecho_Db::get();
+            $row = $db->fetchRow($db->select()->from('table.exsearch')
+                    ->where('table.exsearch.key = ?', $key));
+            $content = $row['data'];
+            echo $content;
+        }
+        elseif (strtolower($_GET['type']) == 'watching') {
+            header("Content-type: application/json");
+            if (!array_key_exists('type', $_GET)) {
+                echo json_encode(array());
+                exit;
+            }
             echo BangumiAPI::updateCacheAndReturn($ID, $PageSize, $From, $ValidTimeSpan);
-        elseif (strtolower($_GET['type']) == 'watched')
+        }
+        elseif (strtolower($_GET['type']) == 'watched') {
+            header("Content-type: application/json");
+            if (!array_key_exists('type', $_GET)) {
+                echo json_encode(array());
+                exit;
+            }
             echo BangumiAPI::updateWatchedCacheAndReturn($ID, $PageSize, $From, $ValidTimeSpan);
+        }
 
     }
 

@@ -255,8 +255,8 @@ class VOID_Plugin implements Typecho_Plugin_Interface
         $ID = new Typecho_Widget_Helper_Form_Element_Text('ID', NULL, '', _t('用户 ID'), 
             _t('填写你的 Bangumi 主页链接 user 后面那一串数字'));
         $form->addInput($ID);
-        $PageSize = new Typecho_Widget_Helper_Form_Element_Text('PageSize', NULL, '6', _t('每页数量'), 
-            _t('填写番剧列表每页数量，填写 -1 则在一页内全部显示，默认为 6.'));
+        $PageSize = new Typecho_Widget_Helper_Form_Element_Text('PageSize', NULL, '12', _t('每页数量'), 
+            _t('填写番剧列表每页数量，填写 -1 则在一页内全部显示，默认为 12.'));
         $form->addInput($PageSize);
         $ValidTimeSpan = new Typecho_Widget_Helper_Form_Element_Text('ValidTimeSpan', NULL, '86400', _t('缓存过期时间'), 
             _t('设置缓存过期时间，单位为秒，默认 24 小时。'));
