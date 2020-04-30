@@ -12,6 +12,7 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
 require_once('libs/WordCount.php');
 require_once('libs/IP.php');
 require_once('libs/ParseImg.php');
+require_once('libs/PandaBangumi.php');
 
 class VOID_Plugin implements Typecho_Plugin_Interface
 {
@@ -218,39 +219,39 @@ class VOID_Plugin implements Typecho_Plugin_Interface
 
         /** ExSearch 面板 */
         // ExSearch 开关
-        $t = new Typecho_Widget_Helper_Form_Element_Radio(
+        $exswitch = new Typecho_Widget_Helper_Form_Element_Radio(
             'exswitch',
             array('true' => '是','false' => '否'),
             'true',
             '开启 Exsearch',
             '开启 ExSearch 可优化主题搜索功能，实现即时搜索。'
         );
-        $form->addInput($t);
+        $form->addInput($exswitch);
         // JSON 静态化
-        $t = new Typecho_Widget_Helper_Form_Element_Radio(
+        $exstatic = new Typecho_Widget_Helper_Form_Element_Radio(
             'static',
             array('true' => '是','false' => '否'),
             'true',
             '静态化',
             '静态化可以节省数据库调用，降低服务器压力。<mark>若需启用，需要保证本插件目录中 cache 文件夹可写。</mark>'
         );
-        $form->addInput($t);
+        $form->addInput($exstatic);
         // Json 文件地址
         $exjson = new Typecho_Widget_Helper_Form_Element_Text('exjson', NULL, '', _t('ExSearch Json 地址'), _t('如果不明白这是什么，请务必保持此项为空！'));
         $form->addInput($exjson);
 
         echo '<hr />';
 
-        /** PanddaBangumi 面板 */
+        /** PandaBangumi 面板 */
         // PandaBangumi 开关
-        $t = new Typecho_Widget_Helper_Form_Element_Radio(
+        $bgmswitch = new Typecho_Widget_Helper_Form_Element_Radio(
             'bgmswitch',
             array('true' => '是','false' => '否'),
             'true',
             '开启 PandaBangumi',
             '开启 PandaBangumi 可扩展主题独立模板，实现追番展示。'
         );
-        $form->addInput($t);
+        $form->addInput($bgmswitch);
         $ID = new Typecho_Widget_Helper_Form_Element_Text('ID', NULL, '', _t('用户 ID'), 
             _t('填写你的 Bangumi 主页链接 user 后面那一串数字'));
         $form->addInput($ID);
@@ -492,7 +493,7 @@ class VOID_Plugin implements Typecho_Plugin_Interface
         }
 
         // 删除静态缓存
-        foreach (glob(__DIR__.'/cache/exsearch-*.json') as $file) {
+        foreach (glob(__DIR__.'/cache/exsearch*.json') as $file) {
             unlink($file);
         }
     }

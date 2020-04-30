@@ -7,7 +7,7 @@
 require_once 'libs/IP.php';
 require_once 'libs/ParseAgent.php';
 require_once 'libs/ParseImg.php';
-require_once 'libs/PandaBangumi.php'
+require_once 'libs/PandaBangumi.php';
 
 
 /**
@@ -50,35 +50,13 @@ class VOID_Action extends Typecho_Widget implements Widget_Interface_Do
     public function action()
     {
         $this->body = json_decode(file_get_contents('php://input'), true);
-
         $this->on($this->request->is('content'))->vote_content();
         $this->on($this->request->is('comment'))->vote_comment();
         $this->on($this->request->is('show'))->vote_show();
         $this->on($this->request->is('getimginfo'))->void_img_info();
         $this->on($this->request->is('getsingleimginfo'))->void_single_img_info();
         $this->on($this->request->is('cleanimginfo'))->void_clean_img_info();
-        
         //$this->response->goBack();
-
-
-        /** PandaBangumi Action */
-        header("Content-type: application/json");
-        if (!array_key_exists('type', $_GET)) {
-            echo json_encode(array());
-            exit;
-        }
-        $options = Helper::options();
-        $ID = $options->plugin('VOID')->ID;
-        $PageSize = $options->plugin('VOID')->PageSize;
-        $ValidTimeSpan = $options->plugin('VOID')->ValidTimeSpan;
-        $From = $_GET['from'];
-        if ($PageSize == -1) {
-            $PageSize = 1000000;
-        }
-        if (strtolower($_GET['type']) == 'watching')
-            echo BangumiAPI::updateCacheAndReturn($ID, $PageSize, $From, $ValidTimeSpan);
-        elseif (strtolower($_GET['type']) == 'watched')
-            echo BangumiAPI::updateWatchedCacheAndReturn($ID, $PageSize, $From, $ValidTimeSpan);
 
         /** ExSearch Action */
         // 要求先登录
@@ -107,6 +85,25 @@ class VOID_Action extends Typecho_Widget implements Widget_Interface_Do
                 echo $content;
                 break;
         }
+
+        /** PandaBangumi Action */
+        header("Content-type: application/json");
+        if (!array_key_exists('type', $_GET)) {
+            echo json_encode(array());
+            exit;
+        }
+        $options = Helper::options();
+        $ID = $options->plugin('VOID')->ID;
+        $PageSize = $options->plugin('VOID')->PageSize;
+        $ValidTimeSpan = $options->plugin('VOID')->ValidTimeSpan;
+        $From = $_GET['from'];
+        if ($PageSize == -1) {
+            $PageSize = 1000000;
+        }
+        if (strtolower($_GET['type']) == 'watching')
+            echo BangumiAPI::updateCacheAndReturn($ID, $PageSize, $From, $ValidTimeSpan);
+        elseif (strtolower($_GET['type']) == 'watched')
+            echo BangumiAPI::updateWatchedCacheAndReturn($ID, $PageSize, $From, $ValidTimeSpan);
 
     }
 
