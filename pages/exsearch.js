@@ -29,7 +29,7 @@ var ModalHelper = {
         o = t.find(".ins-section-container");
 
     function l(n, e, t, a, r) {
-        return i("<div>").addClass("ins-selectable").addClass("ins-search-item").addClass(n = "file" ? "" : "goinline").append(i("<div>").addClass("header").append(i("<i>").addClass("iconfont").addClass("icon-" + n)).append(null != e && "" != e ? e : c.TRANSLATION.UNTITLED).append(t ? i("<span>").addClass("ins-slug").text(t) : null)).append(a ? i("<p>").addClass("ins-search-preview").html(a) : null).attr("data-url", r)
+        return i("<div>").addClass("ins-selectable").addClass("ins-search-item").addClass(n == "file" ? "" : "goinline").append(i("<div>").addClass("header").append(i("<i>").addClass("iconfont").addClass("icon-" + n)).append(null != e && "" != e ? e : c.TRANSLATION.UNTITLED).append(t ? i("<span>").addClass("ins-slug").text(t) : null)).append(a ? i("<p>").addClass("ins-search-preview").html(a) : null).attr("data-url", r)
     }
 
     function a(n, e, t) {
