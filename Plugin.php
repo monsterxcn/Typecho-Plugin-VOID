@@ -212,10 +212,11 @@ class VOID_Plugin implements Typecho_Plugin_Interface
      */
     public static function config(Typecho_Widget_Helper_Form $form)
     {
-        echo '作者：<a href="https://www.imalan.cn" target="_blank">熊猫小A</a>，由 <a href="https://monsterx.cn" target="_blank">Monst.x</a> 融合功能<br>';
+        echo '<style>p.notice {line-height: 1.75; padding: .5rem; padding-left: .75rem; border-left: solid 4px #fbbc05; background: rgba(0,0,25,.025);}</style>';
+        echo '<p class="notice">作者：<a href="https://www.imalan.cn" target="_blank">熊猫小A</a>，由 <a href="https://monsterx.cn" target="_blank">Monst.x</a> 融合功能<br>';
         echo '功能包含：<a href="https://github.com/AlanDecode/VOID-Plugin" target="_blank">VOID</a> & <a href="https://github.com/AlanDecode/Typecho-Plugin-ExSearch" target="_blank">ExSearch</a> & <a href="https://github.com/AlanDecode/Typecho-Plugin-PandaBangumi" target="_blank">PandaBangumi</a><br>';
-        echo '<br><strong>ExSearch 使用方法：打开下方开关后保存设置，然后 <a href="' .Helper::options()->index. '/ExSearch?action=rebuild" target="_blank">重建索引</a> （重建索引会清除所有缓存数据）</strong><br>';
-        echo '<br><strong>PandaBangumi 使用方法：新建独立页面选中 Bgm 追番模板，如需修改模板请参考该插件说明</strong><br>';
+        echo '<strong>ExSearch 使用方法：打开下方开关后保存设置，然后 <a href="' .Helper::options()->index. '/ExSearch?action=rebuild" target="_blank">重建索引</a> （重建索引会清除所有缓存数据）</strong><br>';
+        echo '<strong>PandaBangumi 使用方法：新建独立页面选中 Bgm 追番模板，如需修改模板请参考该插件说明</strong><br><br><br>';
 
         /** ExSearch 面板 */
         // ExSearch 开关
@@ -240,7 +241,6 @@ class VOID_Plugin implements Typecho_Plugin_Interface
         $exjson = new Typecho_Widget_Helper_Form_Element_Text('exjson', NULL, '', _t('ExSearch Json 地址'), _t('如果不明白这是什么，请务必保持此项为空！'));
         $form->addInput($exjson);
 
-        echo '<hr />';
 
         /** PandaBangumi 面板 */
         // PandaBangumi 开关
@@ -269,7 +269,7 @@ class VOID_Plugin implements Typecho_Plugin_Interface
         $Limit = new Typecho_Widget_Helper_Form_Element_Text('Limit', NULL, '20', _t('已看列表数量限制'), _t('设置获取数量限制，不建议设置得太大，有被 Bangumi 拉黑的风险。<b>仅当通过网页解析时有效</b>。不影响在看列表。'));
         $form->addInput($Limit);
 
-        echo '<hr />';
+        
 
         /** VOID 默认面板 */
         // 可设置每次获取图片基础信息数量上限
