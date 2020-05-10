@@ -1,4 +1,10 @@
-<h1 align="center">Typecho Plugin VOID</h1><h3 align="center">✏ 一款简洁优雅的 Typecho 主题的插件</h3></br></br>
+<h1 align="center">Typecho Plugin VOID</h1>
+
+<div align="center">
+
+✏ 一款简洁优雅的 Typecho 主题的插件
+
+</div></br>
 
 
 作为计算机术语时，VOID 的意思是「无类型」。这原是由 [AlanDecode](https://github.com/AlanDecode) 开发的 VOID 主题配套插件，由于 [monsterxcn/Typecho-Theme-VOID](https://github.com/monsterxcn/Typecho-Theme-VOID) 二次开发需要，我将插件也进行了二次开发以适应主题功能，此版本最主要的更新就是将 AlanDecode 的多个插件功能集成，启用此插件配合主题可省去安装 [ExSearch](https://github.com/AlanDecode/Typecho-Plugin-ExSearch) [PandaBangumi](https://github.com/AlanDecode/PandaBangumi-Typecho-Plugin) 两插件。
