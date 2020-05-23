@@ -230,27 +230,27 @@ class VOID_Plugin implements Typecho_Plugin_Interface
             'https://cdn.v2ex.com/gravatar' => 'v2ex 镜像 (https://cdn.v2ex.com)',
             'https://dn-qiniu-avatar.qbox.me/avatar/' => 'qiniu 镜像 (https://dn-qiniu-avatar.qbox.me)',
             'https://sdn.geekzu.org/avatar/' => 'geekzu 镜像 (https://sdn.geekzu.org)',
-            'http://cn.gravatar.com/avatar' => 'Gravatar CN (http://cn.gravatar.com)',
             'https://secure.gravatar.com/avatar' => 'Gravatar Secure (https://secure.gravatar.com)'),
-            'https://gravatar.loli.net/avatar', _t('Gravatar 服务器'), _t('替换 Typecho 默认的 Gravatar 服务器 (www.gravatar.com)'));
+            'https://gravatar.loli.net/avatar', _t('Gravatar 服务器'), _t('替换 Typecho 默认的 Gravatar 服务器 (www.gravatar.com)。'));
         $form->addInput($server->multiMode());
         // 头像优先原则
         $usePriority = new Typecho_Widget_Helper_Form_Element_Radio('usePriority',
             array(
-                'qq' => _t('优先使用 QQ 头像'),
-                'gr' => _t('优先使用 Gravatar 头像'),
+                'gr' => _t('优先 Gravatar 头像'),
+                'qq' => _t('优先 QQ 头像'),
             ),
-            'qq', _t('头像优先原则'), _t('默认启用优先使用 QQ 头像。邮箱为腾讯 QQ 邮箱且用户名为数字则使用加密地址 QQ 头像否则使用 Gravatar 头像.'));
+            'gr', _t('头像优先原则'), _t('默认优先使用 Gravatar 头像。若优先使用 QQ 头像：仅邮箱为腾讯 QQ 邮箱且用户名为合法 QQ 号码时使用加密地址 QQ 头像，其他依旧使用 Gravatar 头像。<br><br>'));
         $form->addInput($usePriority);
         // 默认头像
         $defaultimg = new Typecho_Widget_Helper_Form_Element_Radio('defaultimg', array(
             'blank' => '<img src=https://gravatar.loli.net/avatar/926f6ea036f9236ae1ceec566c2760ea?s=32&r=G&forcedefault=1&d=blank height="32" width="32"  alt=""/> Blank',
-            '' => '<img src=https://gravatar.loli.net/avatar/926f6ea036f9236ae1ceec566c2760ea?s=32&r=G&forcedefault=1&d= height="32" width="32"  alt=""/> Gravatar',
-            'mm' => '<img src=https://gravatar.loli.net/avatar/926f6ea036f9236ae1ceec566c2760ea?s=32&r=G&forcedefault=1&d=mm height="32" width="32" alt=""/> 神秘人物',
-            'identicon' => '<img src=https://gravatar.loli.net/avatar/926f6ea036f9236ae1ceec566c2760ea?s=32&r=G&forcedefault=1&d=identicon height="32" width="32"  alt=""/> 抽象（自动）',
-            'wavatar' => '<img src=https://gravatar.loli.net/avatar/926f6ea036f9236ae1ceec566c2760ea?s=32&r=G&forcedefault=1&d=wavatar height="32" width="32"  alt=""/> Wavatar（自动）',
-            'monsterid' => '<img src=https://gravatar.loli.net/avatar/926f6ea036f9236ae1ceec566c2760ea?s=32&r=G&forcedefault=1&d=monsterid height="32" width="32"  alt=""/> 怪物（生成）<br><br>'),
-            'mm', _t('默认头像'), _t('当评论者没有设置 Gravatar 头像时默认显示该头像'));
+            '' => '<img src=https://gravatar.loli.net/avatar/926f6ea036f9236ae1ceec566c2760ea?s=32&r=G&forcedefault=1&d= height="32" width="32"  alt=""/> 默认',
+            'mm' => '<img src=https://gravatar.loli.net/avatar/926f6ea036f9236ae1ceec566c2760ea?s=32&r=G&forcedefault=1&d=mm height="32" width="32" alt=""/> 轮廓',
+            'identicon' => '<img src=https://gravatar.loli.net/avatar/926f6ea036f9236ae1ceec566c2760ea?s=32&r=G&forcedefault=1&d=identicon height="32" width="32"  alt=""/> 几何（生成）',
+            'wavatar' => '<img src=https://gravatar.loli.net/avatar/926f6ea036f9236ae1ceec566c2760ea?s=32&r=G&forcedefault=1&d=wavatar height="32" width="32"  alt=""/> 面孔（生成）',
+            'retro' => '<img src=https://gravatar.loli.net/avatar/926f6ea036f9236ae1ceec566c2760ea?s=32&r=G&forcedefault=1&d=retro height="32" width="32"  alt=""/> 街机（生成）',
+            'monsterid' => '<img src=https://gravatar.loli.net/avatar/926f6ea036f9236ae1ceec566c2760ea?s=32&r=G&forcedefault=1&d=monsterid height="32" width="32"  alt=""/> 怪兽（生成）'),
+            'mm', _t('默认头像'), _t('当评论者没有设置 Gravatar 头像时默认显示该头像。'));
         $form->addInput($defaultimg->multiMode());
         
         /** ExSearch 面板 */
@@ -288,10 +288,10 @@ class VOID_Plugin implements Typecho_Plugin_Interface
         );
         $form->addInput($bgmswitch);
         $ID = new Typecho_Widget_Helper_Form_Element_Text('ID', NULL, '', _t('用户 ID'), 
-            _t('填写你的 Bangumi 主页链接 user 后面那一串数字'));
+            _t('填写你的 Bangumi 主页链接 user 后面那一串数字。'));
         $form->addInput($ID);
         $PageSize = new Typecho_Widget_Helper_Form_Element_Text('PageSize', NULL, '12', _t('每页数量'), 
-            _t('填写番剧列表每页数量，填写 -1 则在一页内全部显示，默认为 12.'));
+            _t('填写番剧列表每页数量，填写 -1 则在一页内全部显示，默认为 12。'));
         $form->addInput($PageSize);
         $ValidTimeSpan = new Typecho_Widget_Helper_Form_Element_Text('ValidTimeSpan', NULL, '86400', _t('缓存过期时间'), 
             _t('设置缓存过期时间，单位为秒，默认 24 小时。'));
