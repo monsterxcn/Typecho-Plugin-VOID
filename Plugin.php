@@ -282,7 +282,7 @@ class VOID_Plugin implements Typecho_Plugin_Interface
         $bgmswitch = new Typecho_Widget_Helper_Form_Element_Radio(
             'bgmswitch',
             array('true' => '是','false' => '否'),
-            'true',
+            'false',
             '开启 PandaBangumi',
             '开启 PandaBangumi 可扩展主题独立模板，实现追番展示。'
         );
