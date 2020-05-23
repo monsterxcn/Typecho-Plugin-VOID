@@ -216,32 +216,22 @@ class VOID_Plugin implements Typecho_Plugin_Interface
     public static function config(Typecho_Widget_Helper_Form $form)
     {
         echo '<style>p.notice {line-height: 1.75; padding: .5rem; padding-left: .75rem; border-left: solid 4px #fbbc05; background: rgba(0,0,25,.025);}</style>';
-        echo '<p class="notice">作者：<a href="https://www.imalan.cn" target="_blank">熊猫小A</a>，由 <a href="https://monsterx.cn" target="_blank">Monst.x</a> 融合功能<br>';
+        echo '<p class="notice">作者：<a href="https://www.imalan.cn" target="_blank">熊猫小A</a>、<a href="https://krait.cn" target="_blank">权那他</a>，由 <a href="https://monsterx.cn" target="_blank">Monst.x</a> 融合功能<br>';
         echo '功能包含：<a href="https://github.com/AlanDecode/VOID-Plugin" target="_blank">VOID</a> & <a href="https://github.com/kraity/typecho-gravatar" target="_blank">GravatarServer</a> & <a href="https://github.com/AlanDecode/Typecho-Plugin-ExSearch" target="_blank">ExSearch</a> & <a href="https://github.com/AlanDecode/Typecho-Plugin-PandaBangumi" target="_blank">PandaBangumi</a><br>';
         echo '<strong>GravatarServer 使用方法</strong> 在下方选择头像服务器、优先原则和默认头像，然后保存设置<br>';
         echo '<strong>ExSearch 使用方法</strong> 打开下方开关后保存设置，然后 <a href="' .Helper::options()->index. '/ExSearch?action=rebuild" target="_blank">重建索引</a> （重建索引会清除所有缓存数据）<br>';
         echo '<strong>PandaBangumi 使用方法</strong> 新建独立页面选中 Bgm 追番模板，如需修改模板请参考该插件说明</p><br><br>';
 
         /** Gravatar 面板 */
-        // 头像服务器
         $server = new Typecho_Widget_Helper_Form_Element_Radio('server', array(
-            'https://gravatar.loli.net/avatar' => 'loli 镜像 (https://gravatar.loli.net)',
-            'https://gravatar.cat.net/avatar' => 'cat 镜像 (https://gravatar.cat.net)',
-            'https://cdn.v2ex.com/gravatar' => 'v2ex 镜像 (https://cdn.v2ex.com)',
+            'https://gravatar.loli.net/avatar/' => 'loli 镜像 (https://gravatar.loli.net)',
+            'https://gravatar.cat.net/avatar/' => 'cat 镜像 (https://gravatar.cat.net)',
+            'https://cdn.v2ex.com/gravatar/' => 'v2ex 镜像 (https://cdn.v2ex.com)',
             'https://dn-qiniu-avatar.qbox.me/avatar/' => 'qiniu 镜像 (https://dn-qiniu-avatar.qbox.me)',
             'https://sdn.geekzu.org/avatar/' => 'geekzu 镜像 (https://sdn.geekzu.org)',
-            'https://secure.gravatar.com/avatar' => 'Gravatar Secure (https://secure.gravatar.com)'),
-            'https://gravatar.loli.net/avatar', _t('Gravatar 服务器'), _t('替换 Typecho 默认的 Gravatar 服务器 (www.gravatar.com)。'));
+            'https://secure.gravatar.com/avatar/' => 'Gravatar Secure (https://secure.gravatar.com)'),
+            'https://secure.gravatar.com/avatar/', _t('Gravatar 服务器'), _t('替换 Typecho 默认的 Gravatar 服务器 (www.gravatar.com)。'));
         $form->addInput($server->multiMode());
-        // 头像优先原则
-        $usePriority = new Typecho_Widget_Helper_Form_Element_Radio('usePriority',
-            array(
-                'gr' => _t('优先 Gravatar 头像'),
-                'qq' => _t('优先 QQ 头像'),
-            ),
-            'gr', _t('头像优先原则'), _t('默认优先使用 Gravatar 头像。若优先使用 QQ 头像：仅邮箱为腾讯 QQ 邮箱且用户名为合法 QQ 号码时使用加密地址 QQ 头像，其他依旧使用 Gravatar 头像。<br><br>'));
-        $form->addInput($usePriority);
-        // 默认头像
         $defaultimg = new Typecho_Widget_Helper_Form_Element_Radio('defaultimg', array(
             'blank' => '<img src=https://gravatar.loli.net/avatar/926f6ea036f9236ae1ceec566c2760ea?s=32&r=G&forcedefault=1&d=blank height="32" width="32"  alt=""/> Blank',
             '' => '<img src=https://gravatar.loli.net/avatar/926f6ea036f9236ae1ceec566c2760ea?s=32&r=G&forcedefault=1&d= height="32" width="32"  alt=""/> 默认',
@@ -252,9 +242,16 @@ class VOID_Plugin implements Typecho_Plugin_Interface
             'monsterid' => '<img src=https://gravatar.loli.net/avatar/926f6ea036f9236ae1ceec566c2760ea?s=32&r=G&forcedefault=1&d=monsterid height="32" width="32"  alt=""/> 怪兽（生成）'),
             'mm', _t('默认头像'), _t('当评论者没有设置 Gravatar 头像时默认显示该头像。'));
         $form->addInput($defaultimg->multiMode());
+        $usePriority = new Typecho_Widget_Helper_Form_Element_Radio('usePriority',
+            array(
+                'gr' => _t('优先 Gravatar 头像'),
+                'qq' => _t('优先 QQ 头像'),
+            ),
+            'gr', _t('头像优先原则'), _t('默认优先使用 Gravatar 头像。若优先使用 QQ 头像：仅邮箱为腾讯 QQ 邮箱且用户名为合法 QQ 号码时使用加密地址 QQ 头像，其他依旧使用 Gravatar 头像。'));
+        $form->addInput($usePriority);
+        
         
         /** ExSearch 面板 */
-        // ExSearch 开关
         $exswitch = new Typecho_Widget_Helper_Form_Element_Radio(
             'exswitch',
             array('true' => '是','false' => '否'),
@@ -263,7 +260,6 @@ class VOID_Plugin implements Typecho_Plugin_Interface
             '开启 ExSearch 可优化主题搜索功能，实现即时搜索。'
         );
         $form->addInput($exswitch);
-        // JSON 静态化
         $exstatic = new Typecho_Widget_Helper_Form_Element_Radio(
             'static',
             array('true' => '是','false' => '否'),
@@ -272,13 +268,11 @@ class VOID_Plugin implements Typecho_Plugin_Interface
             '静态化可以节省数据库调用，降低服务器压力。<mark>若需启用，需要保证本插件目录中 cache 文件夹可写。</mark>'
         );
         $form->addInput($exstatic);
-        // Json 文件地址
-        $exjson = new Typecho_Widget_Helper_Form_Element_Text('exjson', NULL, '', _t('ExSearch Json 地址'), _t('如果不明白这是什么，请务必保持此项为空！<br><br>'));
+        $exjson = new Typecho_Widget_Helper_Form_Element_Text('exjson', NULL, '', _t('ExSearch Json 地址'), _t('如果不明白这是什么，请务必保持此项为空！'));
         $form->addInput($exjson);
 
 
         /** PandaBangumi 面板 */
-        // PandaBangumi 开关
         $bgmswitch = new Typecho_Widget_Helper_Form_Element_Radio(
             'bgmswitch',
             array('true' => '是','false' => '否'),
@@ -304,10 +298,7 @@ class VOID_Plugin implements Typecho_Plugin_Interface
         $Limit = new Typecho_Widget_Helper_Form_Element_Text('Limit', NULL, '20', _t('已看列表数量限制'), _t('设置获取数量限制，不建议设置得太大，有被 Bangumi 拉黑的风险。<b>仅当通过网页解析时有效</b>。不影响在看列表。<br><br>'));
         $form->addInput($Limit);
 
-        
-
-        /** VOID 默认面板 */
-        // 可设置每次获取图片基础信息数量上限
+        /** VOID 面板 */
         $parseImgLimit = new Typecho_Widget_Helper_Form_Element_Text('parseImgLimit', NULL, '10', _t('单次图片处理数量上限'), 
             _t('这里是每次获取图片基础信息的数量上限。不建议设置过大的数值，太大可能导致处理超时。'));
         $form->addInput($parseImgLimit);
@@ -623,7 +614,7 @@ class VOID_Plugin implements Typecho_Plugin_Interface
     public static function gravatarUrl($mail, $size, $rating, $default, $isSecure = false)
     {
         $hander = Typecho_Widget::widget('Widget_Options')->plugin('VOID');
-        $secure = $isSecure ? 'https://secure.gravatar.com/avatar/' : $hander->server . "/";
+        $secure = $hander->server;
         $s = "?s=" . $size;
         $r = "&r=" . $rating;
         $d = "&d=" . $default;
