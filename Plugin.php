@@ -66,6 +66,9 @@ class VOID_Plugin implements Typecho_Plugin_Interface
 
         /** 图片附件尺寸解析，注册 hook */
         Typecho_Plugin::factory('Widget_Upload')->upload = array('VOID_Plugin', 'upload');
+
+        /** Gravatar 头像解析替换 */
+        Typecho_Plugin::factory('Widget_Abstract_Comments')->gravatar = array('VOID_Plugin', 'render');
         
         /** 字数统计 */
         // contents 表中若无 wordCount 字段则添加
@@ -214,10 +217,42 @@ class VOID_Plugin implements Typecho_Plugin_Interface
     {
         echo '<style>p.notice {line-height: 1.75; padding: .5rem; padding-left: .75rem; border-left: solid 4px #fbbc05; background: rgba(0,0,25,.025);}</style>';
         echo '<p class="notice">作者：<a href="https://www.imalan.cn" target="_blank">熊猫小A</a>，由 <a href="https://monsterx.cn" target="_blank">Monst.x</a> 融合功能<br>';
-        echo '功能包含：<a href="https://github.com/AlanDecode/VOID-Plugin" target="_blank">VOID</a> & <a href="https://github.com/AlanDecode/Typecho-Plugin-ExSearch" target="_blank">ExSearch</a> & <a href="https://github.com/AlanDecode/Typecho-Plugin-PandaBangumi" target="_blank">PandaBangumi</a><br>';
-        echo '<strong>ExSearch 使用方法：打开下方开关后保存设置，然后 <a href="' .Helper::options()->index. '/ExSearch?action=rebuild" target="_blank">重建索引</a> （重建索引会清除所有缓存数据）</strong><br>';
-        echo '<strong>PandaBangumi 使用方法：新建独立页面选中 Bgm 追番模板，如需修改模板请参考该插件说明</strong><br><br><br>';
+        echo '功能包含：<a href="https://github.com/AlanDecode/VOID-Plugin" target="_blank">VOID</a> & <a href="https://github.com/kraity/typecho-gravatar" target="_blank">GravatarServer</a> & <a href="https://github.com/AlanDecode/Typecho-Plugin-ExSearch" target="_blank">ExSearch</a> & <a href="https://github.com/AlanDecode/Typecho-Plugin-PandaBangumi" target="_blank">PandaBangumi</a><br>';
+        echo '<strong>GravatarServer 使用方法</strong> 在下方选择头像服务器、优先原则和默认头像，然后保存设置<br>';
+        echo '<strong>ExSearch 使用方法</strong> 打开下方开关后保存设置，然后 <a href="' .Helper::options()->index. '/ExSearch?action=rebuild" target="_blank">重建索引</a> （重建索引会清除所有缓存数据）<br>';
+        echo '<strong>PandaBangumi 使用方法</strong> 新建独立页面选中 Bgm 追番模板，如需修改模板请参考该插件说明</p><br><br>';
 
+        /** Gravatar 面板 */
+        // 头像服务器
+        $server = new Typecho_Widget_Helper_Form_Element_Radio('server', array(
+            'https://gravatar.loli.net/avatar' => 'loli 镜像 (https://gravatar.loli.net)',
+            'https://gravatar.cat.net/avatar' => 'cat 镜像 (https://gravatar.cat.net)',
+            'https://cdn.v2ex.com/gravatar' => 'v2ex 镜像 (https://cdn.v2ex.com)',
+            'https://dn-qiniu-avatar.qbox.me/avatar/' => 'qiniu 镜像 (https://dn-qiniu-avatar.qbox.me)',
+            'https://sdn.geekzu.org/avatar/' => 'geekzu 镜像 (https://sdn.geekzu.org)',
+            'http://cn.gravatar.com/avatar' => 'Gravatar CN (http://cn.gravatar.com)',
+            'https://secure.gravatar.com/avatar' => 'Gravatar Secure (https://secure.gravatar.com)'),
+            'https://gravatar.loli.net/avatar', _t('Gravatar 服务器'), _t('替换 Typecho 默认的 Gravatar 服务器 (www.gravatar.com)'));
+        $form->addInput($server->multiMode());
+        // 头像优先原则
+        $usePriority = new Typecho_Widget_Helper_Form_Element_Radio('usePriority',
+            array(
+                'qq' => _t('优先使用 QQ 头像'),
+                'gr' => _t('优先使用 Gravatar 头像'),
+            ),
+            'qq', _t('头像优先原则'), _t('默认启用优先使用 QQ 头像。邮箱为腾讯 QQ 邮箱且用户名为数字则使用加密地址 QQ 头像否则使用 Gravatar 头像.'));
+        $form->addInput($usePriority);
+        // 默认头像
+        $defaultimg = new Typecho_Widget_Helper_Form_Element_Radio('defaultimg', array(
+            'blank' => '<img src=https://gravatar.loli.net/avatar/926f6ea036f9236ae1ceec566c2760ea?s=32&r=G&forcedefault=1&d=blank height="32" width="32"  alt=""/> Blank',
+            '' => '<img src=https://gravatar.loli.net/avatar/926f6ea036f9236ae1ceec566c2760ea?s=32&r=G&forcedefault=1&d= height="32" width="32"  alt=""/> Gravatar',
+            'mm' => '<img src=https://gravatar.loli.net/avatar/926f6ea036f9236ae1ceec566c2760ea?s=32&r=G&forcedefault=1&d=mm height="32" width="32" alt=""/> 神秘人物',
+            'identicon' => '<img src=https://gravatar.loli.net/avatar/926f6ea036f9236ae1ceec566c2760ea?s=32&r=G&forcedefault=1&d=identicon height="32" width="32"  alt=""/> 抽象（自动）',
+            'wavatar' => '<img src=https://gravatar.loli.net/avatar/926f6ea036f9236ae1ceec566c2760ea?s=32&r=G&forcedefault=1&d=wavatar height="32" width="32"  alt=""/> Wavatar（自动）',
+            'monsterid' => '<img src=https://gravatar.loli.net/avatar/926f6ea036f9236ae1ceec566c2760ea?s=32&r=G&forcedefault=1&d=monsterid height="32" width="32"  alt=""/> 怪物（生成）<br><br>'),
+            'mm', _t('默认头像'), _t('当评论者没有设置 Gravatar 头像时默认显示该头像'));
+        $form->addInput($defaultimg->multiMode());
+        
         /** ExSearch 面板 */
         // ExSearch 开关
         $exswitch = new Typecho_Widget_Helper_Form_Element_Radio(
@@ -238,7 +273,7 @@ class VOID_Plugin implements Typecho_Plugin_Interface
         );
         $form->addInput($exstatic);
         // Json 文件地址
-        $exjson = new Typecho_Widget_Helper_Form_Element_Text('exjson', NULL, '', _t('ExSearch Json 地址'), _t('如果不明白这是什么，请务必保持此项为空！'));
+        $exjson = new Typecho_Widget_Helper_Form_Element_Text('exjson', NULL, '', _t('ExSearch Json 地址'), _t('如果不明白这是什么，请务必保持此项为空！<br><br>'));
         $form->addInput($exjson);
 
 
@@ -266,7 +301,7 @@ class VOID_Plugin implements Typecho_Plugin_Interface
             'webpage' => '网页'), 'api', 
             '已看列表解析方式', 'API 解析相对稳定，但是有最多获取最近 25 部的限制。网页解析速度可能较慢，但能获取更多记录。不影响在看列表。');
         $form->addInput($ParseMethod);
-        $Limit = new Typecho_Widget_Helper_Form_Element_Text('Limit', NULL, '20', _t('已看列表数量限制'), _t('设置获取数量限制，不建议设置得太大，有被 Bangumi 拉黑的风险。<b>仅当通过网页解析时有效</b>。不影响在看列表。'));
+        $Limit = new Typecho_Widget_Helper_Form_Element_Text('Limit', NULL, '20', _t('已看列表数量限制'), _t('设置获取数量限制，不建议设置得太大，有被 Bangumi 拉黑的风险。<b>仅当通过网页解析时有效</b>。不影响在看列表。<br><br>'));
         $form->addInput($Limit);
 
         
@@ -559,5 +594,59 @@ class VOID_Plugin implements Typecho_Plugin_Interface
         return $cache;
     }
 
-    // ExSearch & PandaBangumi css js 由主题统一引入
+    /** GravatarServer 方法 */
+    /**
+     * 插件实现方法
+     *
+     * @access public
+     * @return void
+     * @throws Typecho_Exception
+     */
+    public static function render($size, $rating, $default, $comments)
+    {
+        $defaultimg = Typecho_Widget::widget('Widget_Options')->plugin('VOID')->defaultimg;
+        $url = self::gravatarUrl($comments->mail, $size, $rating, $defaultimg, $comments->request->isSecure());
+        echo '<img class="avatar" src="' . $url . '" alt="' . $comments->author . '" width="' . $size . '" height="' . $size . '" />';
+    }
+
+    /**
+     * 获取 Gravatar 头像地址
+     *
+     * @param string $mail
+     * @param int $size
+     * @param string $rating
+     * @param string $default
+     * @param bool $isSecure
+     * @return string
+     * @throws Typecho_Exception
+     */
+    public static function gravatarUrl($mail, $size, $rating, $default, $isSecure = false)
+    {
+        $hander = Typecho_Widget::widget('Widget_Options')->plugin('VOID');
+        $secure = $isSecure ? 'https://secure.gravatar.com/avatar/' : $hander->server . "/";
+        $s = "?s=" . $size;
+        $r = "&r=" . $rating;
+        $d = "&d=" . $default;
+        if (empty($mail)) {
+            return $secure . $s . $r . $d;
+        } else {
+            $reg = "/^\d{5,11}@[qQ][Qq]\.(com)$/";
+            if (preg_match($reg, $mail) && $hander->usePriority == "qq") {
+                $object = explode("@", $mail)[0];
+                $url = "https://ptlogin2.qq.com/getface?appid=1006102&uin=" . $object . "&imgtype=3";
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, $url);
+                curl_setopt($ch, CURLOPT_HEADER, 0);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($ch, CURLOPT_TIMEOUT, 8);
+                $avatar = curl_exec($ch);
+                curl_close($ch);
+                $pattern2 = '/pt.setHeader\((.*)\)/is';
+                preg_match($pattern2, $avatar, $result2);
+                return json_decode($result2[1], true)["$object"];
+            } else {
+                return $secure . md5($mail) . $s . $r . $d;
+            }
+        }
+    }
 }

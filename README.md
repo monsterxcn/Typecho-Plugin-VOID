@@ -7,7 +7,7 @@
 </div></br>
 
 
-作为计算机术语时，VOID 的意思是「无类型」。这原是由 [AlanDecode](https://github.com/AlanDecode) 开发的 VOID 主题配套插件，由于 [monsterxcn/Typecho-Theme-VOID](https://github.com/monsterxcn/Typecho-Theme-VOID) 二次开发需要，我将插件也进行了二次开发以适应主题功能，此版本最主要的更新就是将 AlanDecode 的多个插件功能集成，启用此插件配合主题可省去安装 [ExSearch](https://github.com/AlanDecode/Typecho-Plugin-ExSearch) [PandaBangumi](https://github.com/AlanDecode/PandaBangumi-Typecho-Plugin) 两插件。
+作为计算机术语时，VOID 的意思是「无类型」。这原是由 [AlanDecode](https://github.com/AlanDecode) 开发的 VOID 主题配套插件，由于 [monsterxcn/Typecho-Theme-VOID](https://github.com/monsterxcn/Typecho-Theme-VOID) 二次开发需要，我将插件也进行了二次开发以适应主题功能，此版本最主要的更新就是将 AlanDecode 的多个插件以及其他常用插件功能集成，启用此插件配合主题可省去安装 [ExSearch](https://github.com/AlanDecode/Typecho-Plugin-ExSearch) [PandaBangumi](https://github.com/AlanDecode/PandaBangumi-Typecho-Plugin) [GravatarServer](https://github.com/kraity/typecho-gravatar) 三个插件。
 
 ## 特性
 
@@ -18,6 +18,7 @@
  - 访客互动展示
  - 即时搜索
  - 追番展示
+ - 头像增强
 
 ## 使用方法
 
@@ -29,16 +30,9 @@
  - Exsearch 和 PandaBangumi 插件的高级用法请参考对应原版仓库说明。
  - **推荐** 配合 [VOID 二次开发主题](https://github.com/monsterxcn/Typecho-Theme-VOID) 使用。
 
-
-
-## 待办清单
-
- - [ ] 集成 Links 插件功能
- - [x] 多路由干扰问题
- - [x] 集成 PandaBangumi 插件功能
- - [x] 集成 ExSearch 插件功能
-
 ## 更新日志
+
+**2020.05.23** 集成 GravatarServer 插件功能
 
 **2020.05.09** 文档修改
 
